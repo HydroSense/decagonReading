@@ -3,7 +3,6 @@
 #Colby Rome 11-1-2015
 
 import serial
-from threading import Thread
 from time import sleep
 import numpy as np
 from matplotlib import pyplot as plt
@@ -85,11 +84,6 @@ def receiving(ser):
                 cond_x.set_ydata(cond)
                 plt.draw()
 
-
-
-ser = serial.Serial('/dev/ttyACM0', 9600)
-
 if __name__ == '__main__':
     ser = serial.Serial('/dev/ttyACM0', 9600);
-#    Thread(target=receiving, args=(ser,)).start()
     receiving(ser)
