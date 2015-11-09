@@ -5,8 +5,8 @@
 #define DATAPIN 9
 SDI12 mySDI12(DATAPIN);
 
-String meas = "?M!";
-String send = "?D0!";
+String meas = "?M!"; // measure command
+String send = "?D0!"; // send data (back to host) command
 
 void setup(){
     Serial.begin(9600);
@@ -14,6 +14,8 @@ void setup(){
 }
 
 void loop(){
+    /* Should generate new data at approximately 1 Hz.
+    */
     mySDI12.sendCommand(meas);
     delay(400);
     mySDI12.sendCommand(send);
