@@ -1,2 +1,4 @@
-# SDI-12 Sensor Reading
- This Arduino sketch transmits data from the Decagon sensor to be parsed by matlabplot in python.
+# SDI-12 Decagon Sensor Reading
+ This Arduino sketch transmits data at approximately 1 Hz from the Decagon sensor to be plotted in Python.
+
+    The included Python program parses the serial data and plots in realtime using the matlabplot library.
