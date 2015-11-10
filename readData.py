@@ -46,6 +46,7 @@ def receiving(ser):
     plt.ylabel('Conductivity (dS/m)')
     cond_x, = plt.plot(cond)
 
+    p = re.compile('^[+][0-9]+[+-][0-9]+.[0-9][+-][0-9]+')
     while True:
         # Read from serial line; decode binary into ascii string
         last_received = ser.readline().decode('ascii')
@@ -60,7 +61,6 @@ def receiving(ser):
         # ^[0][+][0-9]+[+-][0-9]+.[0-9][+-][0-9]+
 
         # Check for a valid string received:
-        p = re.compile('^[0][+][0-9]+[+-][0-9]+.[0-9][+-][0-9]+')
         match = p.match(last_received)
 
         print('received: ', last_received)
