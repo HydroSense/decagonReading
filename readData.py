@@ -46,10 +46,9 @@ def receiving(ser):
     plt.ylabel('Conductivity (dS/m)')
     cond_x, = plt.plot(cond)
 
-    p = re.compile('^[+][0-9]+[+-][0-9]+.[0-9][+-][0-9]+')
     while True:
         # Read from serial line; decode binary into ascii string
-        last_received = ser.readline().decode('ascii')
+        parsed = parse_sdi12_line(ser.readline().decode('ascii'))
 
         # Example response from sensor (indicating depth, temp, conductivity);
         # 0+130+22.3+283 OR
@@ -57,24 +56,12 @@ def receiving(ser):
         # The sensor specifies that physical damage will occur if the 
         # temperature is less than 0C, so we will not plot values <0.
         
-        # regex matching expression:
-        # ^[0][+][0-9]+[+-][0-9]+.[0-9][+-][0-9]+
+        print('received: ', parsed)
+        if len(parsed) == 3: # if valid string
 
-        # Check for a valid string received:
-        match = p.match(last_received)
-
-        print('received: ', last_received)
-        if match is not None: # If received valid string
-            print(last_received.split('+'))
-
-            # Since the string is guaranteed to be valid, we parse using
-            # the .split() function
-            newTemp = float(last_received.split('+')[2])
-            print(last_received.split('+')[2])
-            newDepth = -float(last_received.split('+')[1]) 
-            print(last_received.split('+')[1])
-            newCond = float(last_received.split('+')[3].split('\\')[0])
-            print(last_received.split('+')[3].split('\\')[0])
+            newDepth = -parsed[0]
+            newTemp = parsed[1]
+            newCond = parsed[2]
             if(new == True): # only occurs once
                 # This is to initialize the y-values to the initial readings
                 new = False
@@ -120,8 +107,47 @@ def receiving(ser):
             #Draw to the screen
             plt.draw()
 
+"""
+parse SDI-12 measurements like the sample below.
+
+tested with Python3.4
+
+Alan Marchiori
+2015
+
+"""
+__r = re.compile('(?:[\+-]\d+)(?:\.\d*)?')
+
+sample = """+119+25.3+299
+-119+25.3+296
++119+25.3-295
++119+25.3+298
++119-25.3+302
++118+25.3+297
++119+25.3+299
+-118+25.3+299
++119-25.3+295"""
+
+def parse_sdi12_line(s):
+    """
+    Parse a single line of measurements like: +119-25.3+302
+    
+    regex explained:
+    (?:[\+-]\d+)(?:\.\d*)?
+     ----------  -------                 
+                 ?: create a non-capture group for the decimal part
+                 \.\d* = a single decimal (. has to be escaped) followed by ZERO or more digits
+                 the trailing ? after this non-capture group means the whole group is optional
+     ?: create a non-capture group for the whole number part
+     [\+-] matches either + or - (plus has to be escaped)
+     \d+ matches ONE or more digits
+     
+    """
+    return [float(i) for i in __r.findall(s)]
+
 if __name__ == '__main__':
     # Modify the serial port as necessary
     # TODO: make the serial port a command line argument?
     ser = serial.Serial('/dev/ttyACM0', 9600);
     receiving(ser)
+
