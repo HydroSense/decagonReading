@@ -18,17 +18,21 @@ def receiving(ser):
 
     new = True # Initialize graphs to initial y-values (not 0)
     plt.ion() # Interactive plot
+
+    plt.rcParams.update({'axes.titlesize' : 'large'})
+    plt.rcParams.update({'axes.labelsize' : 'large'})
     
     # Create lists for holding sensor data
     temp = [0]*NUM_SECS
     depth = [0]*NUM_SECS
     cond = [0]*NUM_SECS
-    plt.figure(figsize=(10,10)) # Adjust the figsize
+#    plt.figure(figsize=(12,12)) # Adjust the figsize
+    plt.figure(figsize = (7,9))
 
     # Temperature
     plt.subplot(311) # Divides figure into 3x1 grid
-    plt.title('Current Decagon Sensor Readings')
-    plt.xlabel('seconds')
+    plt.title('Realtime Water Sensor Readings')
+#    plt.xlabel('seconds')
     plt.ylabel('Temperature (C)')
     temp_x, = plt.plot(temp)
     # plot() returns a list of Line2D objects. The comma unpacks
@@ -36,7 +40,7 @@ def receiving(ser):
 
     # Depth
     plt.subplot(312)
-    plt.xlabel('seconds')
+#    plt.xlabel('seconds')
     plt.ylabel('Depth (mm)')
     depth_x, = plt.plot(depth)
 
@@ -45,6 +49,7 @@ def receiving(ser):
     plt.xlabel('seconds')
     plt.ylabel('Conductivity (dS/m)')
     cond_x, = plt.plot(cond)
+
 
     while True:
         # Read from serial line; decode binary into ascii string
@@ -106,6 +111,7 @@ def receiving(ser):
             
             #Draw to the screen
             plt.draw()
+#            plt.savefig("test.svg")
 
 """
 parse SDI-12 measurements like the sample below.
